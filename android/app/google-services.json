@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "435400012030",
+    "project_id": "flutter-armirene-colombia-sas",
+    "storage_bucket": "flutter-armirene-colombia-sas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:435400012030:android:0ca39836c901bb9bee75af",
+        "android_client_info": {
+          "package_name": "com.example.armirene_colombia_sas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "435400012030-1b4bjkad40jh5dj6ocjto335bne4bmlo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1i53JmXtntCx4bWUVoBpEG0pI1_-26ks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "435400012030-1b4bjkad40jh5dj6ocjto335bne4bmlo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
