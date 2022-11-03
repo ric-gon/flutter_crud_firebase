@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -41,6 +42,15 @@ class _LoginPageState extends State<LoginPage> {
           .createUserWithEmailAndPassword(
               email: _controllerEmail.text, password: _controllerPassword.text);
       widget.onSignIn(userCredential.user);
+
+      final docUser = FirebaseFirestore.instance.collection('users').doc();
+      final json = {
+        'id': docUser.id,
+        'name': _controllerEmail.text,
+        'password': _controllerPassword.text,
+      };
+      docUser.set(json);
+
     } on FirebaseAuthException catch (e) {
       setState(() {
         error = e.message!;
