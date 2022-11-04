@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'login_page.dart';
-import 'home_page.dart';
+import 'pages/login_page.dart';
+import 'pages/home_page.dart';
 
 // ignore: use_key_in_widget_constructors
 class ViewsController extends StatefulWidget {
@@ -23,21 +23,21 @@ class _ViewsControllerState extends State<ViewsController> {
     onRefreshed(FirebaseAuth.instance.currentUser);
   }
 
-  onRefreshed(userCred) {
+  onRefreshed(userCredentials) {
     setState(() {
-      user = userCred;
+      user = userCredentials;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (user == null) {
-      return LoginPage(
-        onSignIn: (userCred) => onRefreshed(userCred),
+    if (user != null) {
+      return HomePage(
+        onSignOut: (userCredentials) => onRefreshed(userCredentials),
       );
     }
-    return HomePage(
-      onSignOut: (userCred) => onRefreshed(userCred),
+    return LoginPage(
+      onSignIn: (userCredentials) => onRefreshed(userCredentials),
     );
   }
 }
