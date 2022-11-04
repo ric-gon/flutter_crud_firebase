@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
     widget.onSignOut(null);
   }
 
-  Widget buildUser(Item user) => ListTile(
+  Widget buildUser(Item item) => ListTile(
         leading: CircleAvatar(
           backgroundColor: Colors.black54,
           child: IconButton(
@@ -30,8 +30,18 @@ class _HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                   builder: ((context) => ItemView(
-                        email: user.email.toString(),
-                        firstName: user.firstName.toString(),
+                    item: item,
+                        /* firstSurname: item.firstSurname.toString(),
+                        secondSurname: item.secondSurname.toString(),
+                        firstName: item.firstName.toString(),
+                        otherNames: item.otherNames.toString(),
+                        country: item.country.toString(),
+                        idType: item.idType.toString(),
+                        id: item.id.toString(),
+                        email: item.email.toString(),
+                        lastActivity: item.lastActivity.toString(),
+                        vertical: item.vertical.toString(),
+                        dateCreated: item.dateCreated.toString(), */
                       )),
                 ),
               );
@@ -40,8 +50,8 @@ class _HomePageState extends State<HomePage> {
             color: Colors.white,
           ),
         ),
-        title: Text(user.email),
-        subtitle: Text(user.firstName),
+        title: Text(item.email),
+        subtitle: Text(item.firstName),
       );
 
   Stream<List<Item>> readUsers() => FirebaseFirestore.instance

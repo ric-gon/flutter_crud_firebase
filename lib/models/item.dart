@@ -2,7 +2,7 @@ class Item {
   String firstSurname;
   String secondSurname;
   String firstName;
-  String? otherNames;
+  String otherNames;
   String country;
   String idType;
   String id;

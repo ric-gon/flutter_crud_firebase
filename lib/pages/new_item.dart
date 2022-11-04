@@ -1,4 +1,3 @@
-import 'package:armirene_colombia_sas/pages/home_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,7 +27,7 @@ class _NewItemState extends State<NewItem> {
   //funcion que asigna un nuevo usuario a la base de datos en Firebase
   Future<void> createItem() async {
     try {
-      final docUser = FirebaseFirestore.instance.collection('items').doc();
+      final docUser = FirebaseFirestore.instance.collection('items').doc(_email.text.toString());
       final json = {
         'firstSurname': _firstSurname.text.toString(),
         'secondSurname': _secondSurname.text.toString(),
