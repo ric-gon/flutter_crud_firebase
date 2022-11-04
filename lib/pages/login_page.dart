@@ -1,8 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:armirene_colombia_sas/pages/sign_up_page.dart';
 
-// ignore: use_key_in_widget_constructors
 class LoginPage extends StatefulWidget {
   // Constructor para asignar el valor onSignIn a la clase
   final Function(User?) onSignIn;
@@ -14,12 +13,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  
   //Variables que almacenan los valores ingresados por el usuario en los form fields
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
 
-  String error="";
+  String error = "";
 
   //funcion que valida si el usuario pertenece a la base de datos en Firebase
   Future<void> loginUser() async {
@@ -28,29 +26,6 @@ class _LoginPageState extends State<LoginPage> {
           .signInWithEmailAndPassword(
               email: _controllerEmail.text, password: _controllerPassword.text);
       widget.onSignIn(userCredential.user);
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        error = e.message!;
-      });
-    }
-  }
-  
-  //funcion que asigna un nuevo usuario a la base de datos en Firebase
-  Future<void> createUser() async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: _controllerEmail.text, password: _controllerPassword.text);
-      widget.onSignIn(userCredential.user);
-
-      final docUser = FirebaseFirestore.instance.collection('users').doc();
-      final json = {
-        'id': docUser.id,
-        'name': _controllerEmail.text,
-        'password': _controllerPassword.text,
-      };
-      docUser.set(json);
-
     } on FirebaseAuthException catch (e) {
       setState(() {
         error = e.message!;
@@ -86,11 +61,22 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             ElevatedButton(
-              onPressed: () {loginUser();},
+              onPressed: () {
+                loginUser();
+              },
               child: const Text("Sign In"),
             ),
             ElevatedButton(
-              onPressed: () {createUser();},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: ((context) => SignUpPage(
+                          onSignUp: widget.onSignIn,
+                        )),
+                  ),
+                );
+              },
               child: const Text("Sign Up"),
             ),
           ],
