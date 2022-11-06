@@ -2,7 +2,6 @@ import 'package:armirene_colombia_sas/widgets/custom_alert_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:armirene_colombia_sas/controllers/views_controller.dart';
 import 'package:armirene_colombia_sas/models/item.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
@@ -51,7 +50,6 @@ class _ItemViewState extends State<ItemView> {
   updateItem() {
     try {
       DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
-      print(_lastActivity);
       FirebaseFirestore.instance
           .collection('items')
           .doc(widget.item.email.toString())
@@ -156,7 +154,7 @@ class _ItemViewState extends State<ItemView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Update Item"),
+        title: const Text("Update/Delete Item"),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -373,8 +371,9 @@ class _ItemViewState extends State<ItemView> {
         child: IconButton(
           onPressed: () {
             setState(() {
+              deleteItem();
               _showMyDialog(
-                  "Delete Item?", "you will delete this item...", "Delete");
+                  "Delete Item", "you deleted this item.", "Home");
             });
           },
           icon: const Icon(Icons.delete_outline_outlined),

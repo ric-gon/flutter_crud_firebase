@@ -1,4 +1,3 @@
-import 'package:armirene_colombia_sas/controllers/views_controller.dart';
 import 'package:flutter/material.dart';
 
 // ignore: use_key_in_widget_constructors, must_be_immutable
@@ -29,8 +28,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
             child: Text(widget.textButton1),
             onPressed: () {
               if (widget.textButton1 == "Home") {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ViewsController()));
+                Navigator.popUntil(context, (route) => route.isFirst);
               } else {
                 Navigator.of(context).pop();
               }

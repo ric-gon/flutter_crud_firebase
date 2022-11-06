@@ -62,13 +62,13 @@ class _HomePageState extends State<HomePage> {
             },
             icon: const Icon(Icons.logout),
           ),
-          /*IconButton(
+          IconButton(
             onPressed: () {
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => const TestPage()));
             },
             icon: const Icon(Icons.error_outline_sharp),
-          ),*/
+          ),
         ],
       ),
       body: StreamBuilder(
