@@ -1,73 +1,72 @@
+import 'package:armirene_colombia_sas/widgets/custom_alert_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:armirene_colombia_sas/views_controller.dart';
+import 'package:armirene_colombia_sas/controllers/views_controller.dart';
 import 'package:armirene_colombia_sas/models/item.dart';
+// ignore: depend_on_referenced_packages
+import 'package:intl/intl.dart';
 
 // ignore: use_key_in_widget_constructors, must_be_immutable
 class ItemView extends StatefulWidget {
-  
   Item item;
   // ignore: use_key_in_widget_constructors
   ItemView({required this.item});
-  /*String firstSurname,
-      secondSurname,
-      firstName,
-      otherNames,
-      country,
-      idType,
-      id,
-      email,
-      lastActivity,
-      vertical,
-      dateCreated;
-
-  // ignore: use_key_in_widget_constructors
-  ItemView(
-      {required this.firstSurname,
-      required this.secondSurname,
-      required this.firstName,
-      required this.otherNames,
-      required this.country,
-      required this.idType,
-      required this.id,
-      required this.email,
-      required this.lastActivity,
-      required this.vertical,
-      required this.dateCreated});*/
-
   @override
   State<ItemView> createState() => _ItemViewState();
 }
 
 class _ItemViewState extends State<ItemView> {
+  final _formKey = GlobalKey<FormState>(); //Form Key
+  String error = ""; // Error varaible message in try catch
+  static const List<String> countriesList = ['Colombia', 'United States'];
+  static const List<String> idTypeList = [
+    'Cédula de Ciudadanía',
+    'Cédula de Extranjería',
+    'Pasaporte',
+    'Permiso Especial'
+  ];
+  static const List<String> verticalsList = [
+    'Administración',
+    'Financiera',
+    'Compras',
+    'Infraestructura',
+    'Operación',
+    'TalentoHumano',
+    'Servicios Varios',
+    'etc.'
+  ];
+  String _country = countriesList.first;
+  String _idType = idTypeList.first;
+  String _vertical = verticalsList.first;
   final _firstSurname = TextEditingController();
   final _secondSurname = TextEditingController();
   final _firstName = TextEditingController();
   final _otherNames = TextEditingController();
-  final _country = TextEditingController();
-  final _idType = TextEditingController();
   final _id = TextEditingController();
   final _email = TextEditingController();
-  final _lastActivity = TextEditingController();
-  final _vertical = TextEditingController();
-  final _dateCreated = TextEditingController();
-  String error='';
+  String _dateCreated = DateTime.now().toString();
+  DateTime _lastActivity = DateTime.now();
 
   updateItem() {
     try {
-      FirebaseFirestore.instance.collection('items').doc(widget.item.email.toString()).update({
+      DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+      print(_lastActivity);
+      FirebaseFirestore.instance
+          .collection('items')
+          .doc(widget.item.email.toString())
+          .update({
         'firstSurname': _firstSurname.text.toString(),
         'secondSurname': _secondSurname.text.toString(),
         'firstName': _firstName.text.toString(),
         'otherNames': _otherNames.text.toString(),
-        'country': _country.text.toString(),
-        'idType': _idType.text.toString(),
+        'country': _country,
+        'idType': _idType,
         'id': _id.text.toString(),
         'email': _email.text.toString(),
-        'lastActivity': _lastActivity.text.toString(),
-        'vertical': _vertical.text.toString(),
-        'dateCreated': _dateCreated.text.toString(),
+        'lastActivity': dateFormat.format(_lastActivity),
+        'vertical': _vertical,
+        'dateCreated': _dateCreated.toString(),
       });
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -78,7 +77,10 @@ class _ItemViewState extends State<ItemView> {
 
   deleteItem() {
     try {
-      FirebaseFirestore.instance.collection('items').doc(widget.item.email.toString()).delete();
+      FirebaseFirestore.instance
+          .collection('items')
+          .doc(widget.item.email.toString())
+          .delete();
     } on FirebaseAuthException catch (e) {
       setState(() {
         error = e.message!;
@@ -86,91 +88,297 @@ class _ItemViewState extends State<ItemView> {
     }
   }
 
+  //Function that fires the Alert Dialog when any field is not valid in the form
+  Future<void> _showMyDialog(txt1, txt2, txtBttn1) async {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: true, // user must tap button!
+        builder: (_) =>
+            CustomAlertDialog(text1: txt1, text2: txt2, textButton1: txtBttn1));
+  }
+
+  //the next 3 functions validates the fields size, regex and not null values
+  String? validateName(String? name) {
+    String pattern = r"^[a-zA-Z]";
+    RegExp regex = RegExp(pattern);
+    if (name == null ||
+        name.isEmpty ||
+        !(regex.hasMatch(name)) ||
+        name.length > 20) {
+      return 'Enter a valid name';
+    } else {
+      return null;
+    }
+  }
+
+  String? validateOtherName(String? name) {
+    String pattern = r"^[a-zA-Z]";
+    RegExp regex = RegExp(pattern);
+    if (name == null ||
+        name.isEmpty ||
+        regex.hasMatch(name) ||
+        name.length > 50) {
+      return null;
+    } else {
+      return 'Enter a valid name';
+    }
+  }
+
+  String? validateID(String? id) {
+    String pattern = r"^[a-zA-Z0-9-]";
+    RegExp regex = RegExp(pattern);
+    if (id == null || id.isEmpty || !regex.hasMatch(id)) {
+      return 'Enter a valid name';
+    } else {
+      return null;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _firstSurname.text = widget.item.firstSurname;
+    _secondSurname.text = widget.item.secondSurname;
+    _firstName.text = widget.item.firstName;
+    _otherNames.text = widget.item.otherNames;
+    _id.text = widget.item.id;
+    _email.text = widget.item.email;
+    _country = widget.item.country;
+    _idType = widget.item.idType;
+    _vertical = widget.item.vertical;
+    _dateCreated = widget.item.dateCreated;
+
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+    _lastActivity = dateFormat.parse(widget.item.lastActivity);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Update Item"),
-        actions: [
-          IconButton(
-            // ignore: avoid_print
-            onPressed: () {
-                  setState(() {
-                    deleteItem();
-                    Navigator.pop(context, MaterialPageRoute(builder: (context)=> ViewsController()));
-                  });
-                },
-            icon: const Icon(Icons.delete_outline_outlined),
-            color: Colors.white,
-          )
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
-        child: SingleChildScrollView(
-          //Widget que contiene todo el form incluyendo los botones
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(
-                //height: 100,
-                child: Text("These are the values of the selected Item:"),
-              ),
-              TextFormField(
-                controller: _firstSurname..text = widget.item.firstSurname,
-                decoration: const InputDecoration(labelText: "First Surname"),
-              ),
-              TextFormField(
-                controller: _secondSurname..text = widget.item.secondSurname,
-                decoration: const InputDecoration(labelText: "Second Surname"),
-              ),
-              TextFormField(
-                controller: _firstName..text = widget.item.firstName,
-                decoration: const InputDecoration(labelText: "First Name"),
-              ),
-              TextFormField(
-                controller: _otherNames..text = widget.item.otherNames,
-                decoration: const InputDecoration(labelText: "Other Names"),
-              ),
-              TextFormField(
-                controller: _country..text = widget.item.country,
-                decoration: const InputDecoration(labelText: "Country"),
-              ),
-              TextFormField(
-                controller: _idType..text = widget.item.idType,
-                decoration: const InputDecoration(labelText: "ID Type"),
-              ),
-              TextFormField(
-                controller: _id..text = widget.item.id,
-                decoration: const InputDecoration(labelText: "ID"),
-              ),
-              TextFormField(
-                controller: _email..text = widget.item.email,
-                decoration: const InputDecoration(labelText: "Email"),
-              ),
-              TextFormField(
-                controller: _lastActivity..text = widget.item.lastActivity,
-                decoration: const InputDecoration(labelText: "Last Activity"),
-              ),
-              TextFormField(
-                controller: _vertical..text = widget.item.vertical,
-                decoration: const InputDecoration(labelText: "Vertical"),
-              ),
-              TextFormField(
-                controller: _dateCreated..text = widget.item.dateCreated,
-                decoration: const InputDecoration(labelText: "Date Created"),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    updateItem();
-                    Navigator.pop(context, MaterialPageRoute(builder: (context)=> ViewsController()));
-                  });
-                },
-                child: const Text("Update Item"),
-              ),
-            ],
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                const SizedBox(height: 10),
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => validateName(value),
+                  controller: _firstSurname,
+                  decoration: const InputDecoration(
+                    suffixIcon: Tooltip(
+                      message: "(ñ) is not acepted and max size is 20 letters",
+                      child: Icon(Icons.info_outline),
+                    ),
+                    prefixIcon: Icon(Icons.person),
+                    labelText: "First Surname",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => validateName(value),
+                  controller: _secondSurname,
+                  decoration: const InputDecoration(
+                    suffixIcon: Tooltip(
+                      message: "(ñ) is not acepted and max size is 20 letters",
+                      child: Icon(Icons.info_outline),
+                    ),
+                    prefixIcon: Icon(Icons.person),
+                    labelText: "Second Surname",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => validateName(value),
+                  controller: _firstName,
+                  decoration: const InputDecoration(
+                    suffixIcon: Tooltip(
+                      message: "(ñ) is not acepted and max size is 20 letters",
+                      child: Icon(Icons.info_outline),
+                    ),
+                    prefixIcon: Icon(Icons.person),
+                    labelText: "First Name",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => validateOtherName(value),
+                  controller: _otherNames,
+                  decoration: const InputDecoration(
+                    suffixIcon: Tooltip(
+                      message:
+                          "[Optional field] (ñ) is not acepted and max size is 50 letters",
+                      child: Icon(Icons.info_outline),
+                    ),
+                    prefixIcon: Icon(Icons.person),
+                    labelText: "Other Names",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField(
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.person),
+                    border: OutlineInputBorder(),
+                  ),
+                  value: _country,
+                  items: countriesList
+                      .map((value) => DropdownMenuItem(
+                            value: value,
+                            child: Text(value),
+                          ))
+                      .toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _country = value!;
+                    });
+                  },
+                ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField(
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.person),
+                    border: OutlineInputBorder(),
+                  ),
+                  value: _idType,
+                  items: idTypeList
+                      .map((value) => DropdownMenuItem(
+                            value: value,
+                            child: Text(value),
+                          ))
+                      .toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _idType = value!;
+                    });
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) => validateID(value),
+                  controller: _id,
+                  decoration: const InputDecoration(
+                    suffixIcon: Tooltip(
+                      message: "This value must be unique",
+                      child: Icon(Icons.info_outline),
+                    ),
+                    prefixIcon: Icon(Icons.person),
+                    labelText: "ID",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  readOnly: true,
+                  controller: _email,
+                  decoration: const InputDecoration(
+                    suffixIcon: Tooltip(
+                      message: "Auto-generated field",
+                      child: Icon(Icons.info_outline),
+                    ),
+                    prefixIcon: Icon(Icons.email),
+                    filled: true,
+                    fillColor: Colors.black12,
+                    labelText: "Email",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black26),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: InputDatePickerFormField(
+                    fieldLabelText: "Last Activity Date",
+                    initialDate: _lastActivity,
+                    onDateSubmitted: (value) => _lastActivity = value,
+                    firstDate:
+                        DateTime.now().subtract(const Duration(days: 31)),
+                    lastDate: DateTime.now(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField(
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.person),
+                    border: OutlineInputBorder(),
+                  ),
+                  value: _vertical,
+                  items: verticalsList
+                      .map((value) => DropdownMenuItem(
+                            value: value,
+                            child: Text(value),
+                          ))
+                      .toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _vertical = value!;
+                    });
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  readOnly: true,
+                  controller: TextEditingController()..text = _dateCreated,
+                  decoration: const InputDecoration(
+                    suffixIcon: Tooltip(
+                      message: "Auto-generated field",
+                      child: Icon(Icons.info_outline),
+                    ),
+                    prefixIcon: Icon(Icons.calendar_month),
+                    labelText: "Date Created",
+                    filled: true,
+                    fillColor: Colors.black12,
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      if (_formKey.currentState!.validate()) {
+                        _showMyDialog(
+                            "Item Updated",
+                            "The${_email.text.toString().toLowerCase()} item was updated",
+                            "Home");
+                        updateItem();
+                      } else {
+                        _showMyDialog("Error", "Invalid values", "Close");
+                      }
+                    });
+                  },
+                  child: const Text("Update Item"),
+                ),
+              ],
+            ),
           ),
+        ),
+      ),
+      floatingActionButton: CircleAvatar(
+        backgroundColor: Colors.red,
+        child: IconButton(
+          onPressed: () {
+            setState(() {
+              _showMyDialog(
+                  "Delete Item?", "you will delete this item...", "Delete");
+            });
+          },
+          icon: const Icon(Icons.delete_outline_outlined),
+          color: Colors.white,
         ),
       ),
     );

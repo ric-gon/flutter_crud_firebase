@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:armirene_colombia_sas/pages/sign_up_page.dart';
+import 'package:armirene_colombia_sas/widgets/custom_alert_dialog.dart';
 
 class LoginPage extends StatefulWidget {
   // Constructor para asignar el valor onSignIn a la clase
@@ -18,8 +19,14 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _controllerPassword = TextEditingController();
 
   String error = "";
+  
+  Future<void> _showMyDialog(txt1, txt2, txtBttn1) async {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (_) => CustomAlertDialog(text1: txt1, text2: txt2, textButton1: txtBttn1));
+  }
 
-  //funcion que valida si el usuario pertenece a la base de datos en Firebase
   Future<void> loginUser() async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
@@ -29,6 +36,7 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       setState(() {
         error = e.message!;
+        _showMyDialog("Sign In Error", error.toString(), "Close");
       });
     }
   }
@@ -36,35 +44,49 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Login Page"),
-      ),
-      body: Center(
-        //Widget que contiene todo el form incluyendo los botones
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
+            const SizedBox(
               //height: 100,
-              child: Text(error),
+              child: Text(
+                "Sign In",
+                style: TextStyle(color: Colors.blue, fontSize: 30),
+              ),
+            ),
+            const SizedBox(
+              height: 50,
             ),
             TextFormField(
               controller: _controllerEmail,
               decoration: const InputDecoration(
                 labelText: "Email",
+                prefixIcon: Icon(Icons.email),
+                border: OutlineInputBorder(),
               ),
             ),
+            const SizedBox(
+              height: 10,
+            ),
             TextFormField(
+              obscureText: true,
               controller: _controllerPassword,
               decoration: const InputDecoration(
                 labelText: "Password",
+                prefixIcon: Icon(Icons.lock_outline_rounded),
+                border: OutlineInputBorder(),
               ),
+            ),
+            const SizedBox(
+              height: 10,
             ),
             ElevatedButton(
               onPressed: () {
                 loginUser();
               },
-              child: const Text("Sign In"),
+              child: const Text("Log In"),
             ),
             ElevatedButton(
               onPressed: () {

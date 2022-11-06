@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../models/item.dart';
 import 'item_view.dart';
+import 'test_page.dart';
 
 // ignore: use_key_in_widget_constructors
 class HomePage extends StatefulWidget {
@@ -30,18 +31,7 @@ class _HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                   builder: ((context) => ItemView(
-                    item: item,
-                        /* firstSurname: item.firstSurname.toString(),
-                        secondSurname: item.secondSurname.toString(),
-                        firstName: item.firstName.toString(),
-                        otherNames: item.otherNames.toString(),
-                        country: item.country.toString(),
-                        idType: item.idType.toString(),
-                        id: item.id.toString(),
-                        email: item.email.toString(),
-                        lastActivity: item.lastActivity.toString(),
-                        vertical: item.vertical.toString(),
-                        dateCreated: item.dateCreated.toString(), */
+                        item: item,
                       )),
                 ),
               );
@@ -72,6 +62,13 @@ class _HomePageState extends State<HomePage> {
             },
             icon: const Icon(Icons.logout),
           ),
+          /*IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => const TestPage()));
+            },
+            icon: const Icon(Icons.error_outline_sharp),
+          ),*/
         ],
       ),
       body: StreamBuilder(

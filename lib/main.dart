@@ -1,4 +1,4 @@
-import 'package:armirene_colombia_sas/views_controller.dart';
+import 'package:armirene_colombia_sas/controllers/views_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'pages/login_page.dart';
-import 'pages/home_page.dart';
+import '../pages/login_page.dart';
+import '../pages/home_page.dart';
 
 // ignore: use_key_in_widget_constructors
 class ViewsController extends StatefulWidget {
