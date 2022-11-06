@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.armirene_colombia_sas">
    <application
-        android:label="armirene_colombia_sas"
+        android:label="Flutter CRUD"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
