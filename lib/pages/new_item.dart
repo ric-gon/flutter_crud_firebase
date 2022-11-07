@@ -55,7 +55,7 @@ class _NewItemState extends State<NewItem> {
       final docUser = FirebaseFirestore.instance
           .collection('items')
           .doc(_email.text.toString().toLowerCase());
-      
+
       DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
 
       final json = {
@@ -89,15 +89,10 @@ class _NewItemState extends State<NewItem> {
   }
 
   //Function where the email is created concatenate the domain array
-  List<String> domain = ["", ".", "", "@domain.com"];
+  List<String> domain = ["", ".", "", "", "@domain.com"];
   updateDomain(textDomain, int position) {
-    if (position == 0) {
-      domain[0] = textDomain;
-      return domain;
-    } else {
-      domain[2] = textDomain;
-      return domain;
-    }
+    position == 0 ? domain[0] = textDomain : domain[2] = textDomain;
+    return domain;
   }
 
   //the next 3 functions validates the fields size, regex and not null values
@@ -349,8 +344,10 @@ class _NewItemState extends State<NewItem> {
                     onPressed: () {
                       setState(() {
                         if (_formKey.currentState!.validate()) {
-                          _showMyDialog("New Item",
-                              "Your email is ${_email.text.toString().toLowerCase()}", "Home");
+                          _showMyDialog(
+                              "New Item",
+                              "Your email is ${_email.text.toString().toLowerCase()}",
+                              "Home");
                           createItem();
                         } else {
                           _showMyDialog("Error", "Invalid values", "Close");

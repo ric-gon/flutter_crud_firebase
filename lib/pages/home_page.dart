@@ -17,6 +17,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<String> collectionField = [
+    "firstSurname",
+    "secondSurname",
+    "firstName",
+    "otherNames",
+    "country",
+    "idType",
+    "id",
+    "email",
+    "lastActivity",
+    "vertical",
+    "dateCreated",
+  ];
+  String fieldSelected = "email";
+  List<String> orderBy = ["Ascending", "Descending"];
+  String isDescending = "Descending";
+
   Future<void> logOut() async {
     await FirebaseAuth.instance.signOut();
     widget.onSignOut(null);
@@ -41,11 +58,15 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         title: Text(item.email),
-        subtitle: Text(item.firstName),
+        subtitle: Text(item.id),
       );
 
   Stream<List<Item>> readUsers() => FirebaseFirestore.instance
       .collection('items')
+      .orderBy(
+        fieldSelected,
+        descending: isDescending == "Descending" ? true : false,
+      )
       .snapshots()
       .map((snapshot) =>
           snapshot.docs.map((doc) => Item.fromJson(doc.data())).toList());
@@ -64,25 +85,72 @@ class _HomePageState extends State<HomePage> {
           ),
           IconButton(
             onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => const TestPage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const TestPage()));
             },
             icon: const Icon(Icons.error_outline_sharp),
           ),
         ],
       ),
-      body: StreamBuilder(
-        stream: readUsers(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          } else if (snapshot.hasData) {
-            final items = snapshot.data!;
-            return ListView(children: items.map(buildUser).toList());
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
+      body: Column(
+        children: [
+          Row(
+            children: [
+              const SizedBox(width: 15),
+              const Text('Select field: '),
+              DropdownButton<String>(
+                value: fieldSelected,
+                items: collectionField.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                    onTap: () {
+                      setState(() {
+                        fieldSelected = value;
+                      });
+                    },
+                  );
+                }).toList(),
+                onChanged: (_) {},
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              const SizedBox(width: 15),
+              const Text('Select order: '),
+              DropdownButton<String>(
+                value: isDescending,
+                items: orderBy.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                    onTap: () {
+                      setState(() {
+                        isDescending = value;
+                      });
+                    },
+                  );
+                }).toList(),
+                onChanged: (_) {},
+              ),
+            ],
+          ),
+          StreamBuilder(
+            stream: readUsers(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
+              } else if (snapshot.hasData) {
+                final items = snapshot.data!;
+                return ListView(
+                    shrinkWrap: true, children: items.map(buildUser).toList());
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,

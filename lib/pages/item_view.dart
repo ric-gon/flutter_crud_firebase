@@ -370,11 +370,26 @@ class _ItemViewState extends State<ItemView> {
         backgroundColor: Colors.red,
         child: IconButton(
           onPressed: () {
-            setState(() {
-              deleteItem();
-              _showMyDialog(
-                  "Delete Item", "you deleted this item.", "Home");
-            });
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Delete Item'),
+                content: const Text('Do you want delte this Item?'),
+                actions: [
+                  TextButton(
+                      onPressed: (() {
+                        Navigator.of(context).pop();
+                      }),
+                      child: const Text('Back')),
+                  TextButton(
+                      onPressed: (() {
+                        deleteItem();
+                        Navigator.popUntil(context, (route) => route.isFirst);
+                      }),
+                      child: const Text('Delete Item'))
+                ],
+              ),
+            );
           },
           icon: const Icon(Icons.delete_outline_outlined),
           color: Colors.white,
